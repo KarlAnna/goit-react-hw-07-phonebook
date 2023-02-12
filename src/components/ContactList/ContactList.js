@@ -1,27 +1,35 @@
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
-import { getContacts, getFilterValue } from 'redux/contactsSlice';
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectContacts, selectFilterValue } from 'redux/selectors';
+import { fetchContacts } from '../../redux/contacts/contactsOperations'
 import ContactItem from "../ContactItem/ContactItem"
 
 const ContactList = () => {
-    const { contacts } = useSelector(getContacts)
-    const filter = useSelector(getFilterValue)
+    const { items, isLoading } = useSelector(selectContacts)
+    const filter = useSelector(selectFilterValue)
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch(fetchContacts());
+    }, [dispatch])
 
     const getVisibleContacts = () => {
         const normFilter = filter.toLowerCase().trim()
         if (filter.length > 0) {
-            return contacts.filter(contact => contact.name.toLowerCase().includes(normFilter))
+            return items.filter(item => item.name.toLowerCase().includes(normFilter))
         }
-        return contacts
+        return items
     }
     
     return (
         <>
-            {contacts.length > 0 && (
+            {isLoading && <div>Loading ...</div>}
+            {getVisibleContacts().length > 0 && (
                 <ul>
-                    {getVisibleContacts().map((contact) =>
-                        <li key={contact.id}>
-                            <ContactItem contact={contact} />
+                    {getVisibleContacts().map((item) =>
+                        <li key={item.id}>
+                            <ContactItem item={item} />
                         </li>
                     )}
                 </ul>

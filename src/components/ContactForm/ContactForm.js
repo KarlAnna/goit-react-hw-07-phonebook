@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { addContact } from '../../redux/contactsSlice';
+import { addContact } from '../../redux/contacts/contactsOperations'
+import { nanoid } from 'nanoid';
 import '../Phonebook.css'
 
 export default function ContactForm() {
@@ -11,8 +12,13 @@ export default function ContactForm() {
 
     const formSubmitHandler = (e) => {
         e.preventDefault()
+        const newItem = {
+            name,
+            phone: number,
+            id: nanoid()
+        }
 
-        dispatch(addContact(name, number));
+        dispatch(addContact(newItem));
 
         setName('')
         setNumber('')
